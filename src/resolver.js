@@ -47,7 +47,7 @@ function resolverFactory(targetMaybeThunk, options = {}) {
     const fields = graphqlFields(info);
 
     let targetAttributes = getAttributes(fields);
-    let findOptions = argsToFindOptions(args, targetAttributes);
+    let findOptions = argsToFindOptions(args, Object.keys(model.rawAttributes));
 
     info = {
       ...info,
