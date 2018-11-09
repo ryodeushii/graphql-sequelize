@@ -1,8 +1,8 @@
-import { GraphQLList, GraphQLNonNull } from 'graphql';
+import {GraphQLList, GraphQLNonNull} from 'graphql';
 import _ from 'lodash';
 import graphqlFields from 'graphql-fields';
 import argsToFindOptions from './argsToFindOptions';
-import { isConnection, handleConnection, nodeType } from './relay';
+import {isConnection, handleConnection, nodeType} from './relay';
 import invariant from 'assert';
 import Promise from 'bluebird';
 
@@ -34,21 +34,22 @@ function resolverFactory(targetMaybeThunk, options = {}) {
 
   return async function (source, args, context, info) {
     let target = typeof targetMaybeThunk === 'function' && targetMaybeThunk.findAndCountAll === undefined ?
-                 await Promise.resolve(targetMaybeThunk(source, args, context, info)) : targetMaybeThunk
-      , isModel = !!target.getTableName
-      , isAssociation = !!target.associationType
-      , association = isAssociation && target
-      , model = isAssociation && target.target || isModel && target
-      , type = info.returnType
-      , list = options.list ||
-        type instanceof GraphQLList ||
-        type instanceof GraphQLNonNull && type.ofType instanceof GraphQLList;
+            await Promise.resolve(targetMaybeThunk(source, args, context, info)) : targetMaybeThunk
+            , isModel = !!target.getTableName
+            , isAssociation = !!target.associationType
+            , association = isAssociation && target
+            , model = isAssociation && target.target || isModel && target
+            , type = info.returnType
+            , list = options.list ||
+            type instanceof GraphQLList ||
+            type instanceof GraphQLNonNull && type.ofType instanceof GraphQLList;
 
     const fields = graphqlFields(info);
-    const rawAttributes = Object.keys(model.rawAttributes);
+    const references = Object.keys(model.rawAttributes)
+            .filter(key => model.rawAttributes[key].references || model.rawAttributes[key].primaryKey);
 
-    let targetAttributes = getAttributes(fields);
-    let findOptions = argsToFindOptions(args, rawAttributes);
+    let targetAttributes = references.concat(getAttributes(fields));
+    let findOptions = argsToFindOptions(args, targetAttributes);
 
     info = {
       ...info,
@@ -81,7 +82,7 @@ function resolverFactory(targetMaybeThunk, options = {}) {
 
       if (association) {
         if (source.get(association.as) !== undefined) {
-          // The user did a manual include
+                    // The user did a manual include
           const result = source.get(association.as);
           if (options.handleConnection && isConnection(info.returnType)) {
             return handleConnection(result, args);
