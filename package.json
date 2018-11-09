@@ -42,6 +42,7 @@
   "homepage": "https://github.com/mickhansen/graphql-sequelize",
   "dependencies": {
     "bluebird": "^3.4.0",
+    "graphql-fields": "^1.2.1",
     "invariant": "2.2.1",
     "lodash": "^4.0.0"
   },

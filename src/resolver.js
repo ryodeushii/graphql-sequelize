@@ -1,5 +1,6 @@
 import { GraphQLList, GraphQLNonNull } from 'graphql';
 import _ from 'lodash';
+import graphqlFields from 'graphql-fields';
 import argsToFindOptions from './argsToFindOptions';
 import { isConnection, handleConnection, nodeType } from './relay';
 import invariant from 'assert';
@@ -19,6 +20,9 @@ function whereQueryVarsToValues(o, vals) {
     }
   });
 }
+
+const getAttributes = object => Object.keys(object)
+    .filter(key => Object.keys(object[key]).length === 0);
 
 function resolverFactory(targetMaybeThunk, options = {}) {
   const contextToOptions = _.assign({}, resolverFactory.contextToOptions, options.contextToOptions);
@@ -40,8 +44,10 @@ function resolverFactory(targetMaybeThunk, options = {}) {
         type instanceof GraphQLList ||
         type instanceof GraphQLNonNull && type.ofType instanceof GraphQLList;
 
-    let targetAttributes = Object.keys(model.rawAttributes)
-      , findOptions = argsToFindOptions(args, targetAttributes);
+    const fields = graphqlFields(info);
+
+    let targetAttributes = getAttributes(fields);
+    let findOptions = argsToFindOptions(args, targetAttributes);
 
     info = {
       ...info,
@@ -70,10 +76,6 @@ function resolverFactory(targetMaybeThunk, options = {}) {
       if (args.where && !_.isEmpty(info.variableValues)) {
         whereQueryVarsToValues(args.where, info.variableValues);
         whereQueryVarsToValues(findOptions.where, info.variableValues);
-      }
-
-      if (list && !findOptions.order) {
-        findOptions.order = [[model.primaryKeyAttribute, 'ASC']];
       }
 
       if (association) {
