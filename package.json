@@ -1,7 +1,7 @@
 {
   "name": "graphql-sequelize",
   "version": "9.0.4",
-  "description": "GraphQL & Relay for MySQL & Postgres via Sequelize",
+  "description": "GraphQL & Relay for MySQL & Postgres via Sequelize, PATCHED",
   "main": "lib/index.js",
   "options": {
     "mocha": "--require scripts/mocha-bootload"
@@ -33,6 +33,10 @@
     {
       "name": "graphql-sequelize community",
       "url": "https://github.com/mickhansen/graphql-sequelize/graphs/contributors"
+    },
+    {
+      "name": "Eugene Kapusta",
+      "url": "https://github.com/ryodeushii"
     }
   ],
   "license": "MIT",
@@ -42,6 +46,7 @@
   "homepage": "https://github.com/mickhansen/graphql-sequelize",
   "dependencies": {
     "bluebird": "^3.4.0",
+    "graphql-fields": "^1.2.1",
     "invariant": "2.2.1",
     "lodash": "^4.0.0"
   },
