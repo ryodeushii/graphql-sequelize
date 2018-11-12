@@ -47,8 +47,8 @@ function resolverFactory(targetMaybeThunk, options = {}) {
     const fields = graphqlFields(info);
     const references = Object.keys(model.rawAttributes)
             .filter(key => model.rawAttributes[key].references || model.rawAttributes[key].primaryKey);
-
-    let targetAttributes = references.concat(getAttributes(fields));
+    const exclude = ['__typename'];
+    let targetAttributes = references.concat(getAttributes(fields)).filter(field => !exclude.includes(field));
     let findOptions = argsToFindOptions(args, targetAttributes);
 
     info = {
