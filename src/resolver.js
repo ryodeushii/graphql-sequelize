@@ -66,7 +66,7 @@ function resolverFactory(targetMaybeThunk, options = {}) {
 
     type = type.ofType || type;
 
-    findOptions.attributes = targetAttributes;
+    findOptions.attributes = _.uniq(targetAttributes);
     findOptions.logging = findOptions.logging || context.logging;
     findOptions.graphqlContext = context;
 
